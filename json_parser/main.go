@@ -1,38 +1,28 @@
 package main
 
-import (
-	"fmt"
-	"os"
-)
-
-
+import "fmt"
 
 func main() {
-	
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: json-parser <filename>")
-		os.Exit(1)
+	testCases := []struct {
+		input string 
+		expected bool
+	}{
+		{`{}`, true},
+		{`{"name":"James"}`, true},
+		{`{`,false},
+		{`{"name"}`, false},
+		{`{"name":}`, false},
 	}
 
-	// Get the filename from command line arguments 
-	filename := os.Args[1]
+	for _, tc := range testCases {
+		
+		parser := NewParser(tc.input)
+		is_valid := parser.Parse()
 
-	// Read the file 
-	content, err := os.ReadFile(filename)
-	if err != nil {
-		fmt.Printf("Error reading file: %v\n", err)
-		os.Exit(1)
+		if is_valid == tc.expected {
+			fmt.Printf("Pass")
+		} else {
+			fmt.Printf("Not Pass")
+		}
 	}
-
-	// Parse the Json 
-	parser := NewParser(string(content))
-
-	if parser.Parse() {
-		fmt.Println("\nValid JSON")
-	} else {
-		fmt.Println("\nInvalid JSON")
-	}
-
 }
-
-

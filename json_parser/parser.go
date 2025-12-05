@@ -37,21 +37,52 @@ func (p *Parser) Parse() bool {
 		return false 
 	}
 
-	for p.currentToken.Type == ILLEGAL{
-		fmt.Printf("\n Illegal Token %s",p.currentToken.Literal)
-		p.nextToken()
-	}
+	p.nextToken() // read past the next token
 
-	if p.currentToken.Type != RIGHT_BRACE {
-		fmt.Printf("Error: Expected '}' but got '%s' at line no %d, at column no %d", p.currentToken.Literal, p.currentToken.Line, p.currentToken.Column)
+	if p.currentToken.Type == RIGHT_BRACE {
+		
+		p.nextToken()
+
+		if p.currentToken.Type != EOF {
+			fmt.Printf("Error: Expected end of input but got '%s' at line no %d, at column no %d", 
+				p.currentToken.Literal, p.currentToken.Line, p.currentToken.Column)
+			return false
+		}
+
+		return true
+	}
+		
+	fmt.Printf("Error: Object with content not implemented yet\n")
+	return false
+}
+
+// Let's do the validation alone.
+func (p *Parser) parseKeyValuePair() bool {
+	
+	if p.currentToken.Type != STRING {
+		fmt.Printf("Error: Expected string key but got '%s' at line %d, column %d\n",
+			p.currentToken.Literal, p.currentToken.Line, p.currentToken.Column)
 		return false
 	}
 	
 	p.nextToken()
-	if p.currentToken.Type != EOF {
-		fmt.Printf("Error: Expected end of input but got '%s' at line no %d, at column no %d", p.currentToken.Literal, p.currentToken.Line, p.currentToken.Column)
+
+	if p.currentToken.Type != COLON {
+		fmt.Printf("Error: Expected ':' but got '%s' at line %d, column %d\n",
+			p.currentToken.Literal, p.currentToken.Line, p.currentToken.Column)
 		return false
 	}
 
+	p.nextToken()
+
+	if p.currentToken.Type != STRING {
+		fmt.Printf("Error: Expected string value but got '%s' at line %d, column %d\n",
+			p.currentToken.Literal, p.currentToken.Line, p.currentToken.Column)
+		return false
+	}
+
+	p.nextToken()
 	return true
 }
+
+

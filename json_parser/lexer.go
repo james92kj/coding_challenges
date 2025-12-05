@@ -95,13 +95,10 @@ func (l *Lexer) NextToken() Token {
 			Column: l.column,
 		}
 	case '"':
-		tok = Token{
-			Type: STRING,
-			Literal: '"',
-			Line: l.line,
-			Column: l.column,
-		}
-
+		tok.Type=STRING
+		tok.Literal=l.readString()
+		tok.Line=l.line 
+		tok.Column=l.column
 	default:
 		tok = Token{
 			Type: ILLEGAL,
@@ -116,4 +113,26 @@ func (l *Lexer) NextToken() Token {
 	l.readChar()
 	
 	return tok
+}
+
+func (l *Lexer) readString() string {
+	position := l.position + 1
+
+	for {
+		l.readChar()
+
+		if l.ch == '"' {
+			break
+		}
+
+		if l.ch == '\\' {
+			l.readChar()
+		}
+
+		if l.ch == 0 {
+			break
+		}
+	}
+
+	return l.input[position:l.position]
 }
