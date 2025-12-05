@@ -52,8 +52,30 @@ func (p *Parser) Parse() bool {
 		return true
 	}
 		
-	fmt.Printf("Error: Object with content not implemented yet\n")
-	return false
+	if !p.parseKeyValuePair() {
+		return false 
+	}
+
+	for p.currentToken.Type == COMMA {
+		p.nextToken()
+
+		if !p.parseKeyValuePair() {
+			return false
+		}
+	}
+	
+	if p.currentToken.Type != RIGHT_BRACE {
+		fmt.Printf("Error: Expected  '}' but got '%s' at line %d, column %d\n", p.currentToken, p.currentToken.Line, p.currentToken.Column)
+	}
+
+	p.nextToken()
+
+	if p.currentToken.Type != EOF {
+		fmt.Printf("Error: Expected end of input but got '%s' at line %d, column %d", p.currentToken, p.currentToken.Line, p.currentToken.Column)
+		return false
+	}
+
+	return true
 }
 
 // Let's do the validation alone.
